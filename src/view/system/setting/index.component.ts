@@ -1,4 +1,5 @@
-// Copyright @ 2018-2022 xiejiahe. All rights reserved. MIT license.
+// @ts-nocheck
+// Copyright @ 2018-present xiejiahe. All rights reserved. MIT license.
 // See https://github.com/xjh22222228/nav
 
 import { Component } from '@angular/core'
@@ -14,44 +15,44 @@ import { settings } from 'src/store'
 @Component({
   selector: 'system-setting',
   templateUrl: './index.component.html',
-  styleUrls: ['./index.component.scss']
+  styleUrls: ['./index.component.scss'],
 })
 export default class SystemSettingComponent {
   $t = $t
-  validateForm!: FormGroup;
+  validateForm!: FormGroup
   submitting: boolean = false
   settings = settings
 
-  constructor (
+  constructor(
     private fb: FormBuilder,
     private notification: NzNotificationService,
     private message: NzMessageService,
-    private modal: NzModalService,
-  ) {}
-
-  ngOnInit () {
+    private modal: NzModalService
+  ) {
     this.validateForm = this.fb.group({
-      ...settings
+      ...settings,
     })
   }
 
-  onLogoChange(data) {
-    this.settings.favicon = data.cdn
+  ngOnInit() {}
+
+  onLogoChange(data: any) {
+    this.settings.favicon = data.cdn || data.target?.value || ''
   }
 
-// Sim ===========================
-  onSimBannerChange(data, idx) {
-    this.settings.simThemeImages[idx].src = data.cdn
+  // Sim ===========================
+  onSimBannerChange(data: any, idx: number) {
+    this.settings.simThemeImages[idx]['src'] = data.cdn
   }
 
-  onChangeSimBannerUrl(e, idx) {
+  onChangeSimBannerUrl(e: any, idx: number) {
     const value = e.target.value.trim()
-    this.settings.simThemeImages[idx].src = value
+    this.settings.simThemeImages[idx]['src'] = value
   }
 
-  onChangeSimJumpUrl(e, idx) {
+  onChangeSimJumpUrl(e: any, idx: number) {
     const value = e.target.value.trim()
-    this.settings.simThemeImages[idx].url = value
+    this.settings.simThemeImages[idx]['url'] = value
   }
 
   onDeleteSimBanner(idx: number) {
@@ -60,23 +61,23 @@ export default class SystemSettingComponent {
 
   onAddSimBanner() {
     this.settings.simThemeImages.push({
-      ...this.settings.simThemeImages[0]
+      ...this.settings.simThemeImages[0],
     })
   }
 
-// Side ===========================
-  onSideBannerChange(data, idx) {
-    this.settings.sideThemeImages[idx].src = data.cdn
+  // Side ===========================
+  onSideBannerChange(data: any, idx: number) {
+    this.settings.sideThemeImages[idx]['src'] = data.cdn
   }
 
-  onChangeSideBannerUrl(e, idx) {
+  onChangeSideBannerUrl(e: any, idx: number) {
     const value = e.target.value.trim()
-    this.settings.sideThemeImages[idx].src = value
+    this.settings.sideThemeImages[idx]['src'] = value
   }
 
-  onChangeSideJumpUrl(e, idx) {
+  onChangeSideJumpUrl(e: any, idx: number) {
     const value = e.target.value.trim()
-    this.settings.sideThemeImages[idx].url = value
+    this.settings.sideThemeImages[idx]['src'] = value
   }
 
   onDeleteSideBanner(idx: number) {
@@ -85,39 +86,43 @@ export default class SystemSettingComponent {
 
   onAddSideBanner() {
     this.settings.sideThemeImages.push({
-      ...this.settings.sideThemeImages[0]
+      ...this.settings.sideThemeImages[0],
     })
   }
 
-// Mirror ===========================
-  onMirrorBannerChange(data, idx) {
-    this.settings.sideThemeImages[idx].src = data.cdn
+  // Mirror ===========================
+  onMirrorBannerChange(data: any, idx: number) {
+    this.settings.sideThemeImages[idx]['src'] = data.cdn
   }
 
   onAddMirror() {
     this.settings.mirrorList.push({
       url: '',
       icon: '',
-      name: ''
+      name: '',
     })
   }
 
-  onDelMirror(idx) {
+  onDelMirror(idx: number) {
     this.settings.mirrorList.splice(idx, 1)
   }
 
-  onChangeMirrorUrl(e, idx) {
+  onChangeMirrorUrl(e: any, idx: number) {
     const value = e.target.value.trim()
-    this.settings.mirrorList[idx].url = value
+    this.settings.mirrorList[idx]['url'] = value
   }
 
-  onChangeMirrorName(e, idx) {
+  onChangeMirrorName(e: any, idx: number) {
     const value = e.target.value.trim()
-    this.settings.mirrorList[idx].name = value
+    this.settings.mirrorList[idx]['name'] = value
   }
 
-  onShortcutImgChange(data) {
-    this.settings.shortcutThemeImages[0].src = data.cdn
+  onShortcutImgChange(e: any) {
+    const url = e?.target?.value?.trim() || e.cdn
+    if (!url) {
+      return
+    }
+    this.settings.shortcutThemeImages[0]['src'] = url
   }
 
   handleSubmit() {
@@ -136,27 +141,27 @@ export default class SystemSettingComponent {
           simThemeImages: this.settings.simThemeImages,
           shortcutThemeImages: this.settings.shortcutThemeImages,
           sideThemeImages: this.settings.sideThemeImages,
-          mirrorList: this.settings.mirrorList.filter(item => (
-            item.url && item.name
-          ))
+          mirrorList: this.settings.mirrorList.filter(
+            (item) => item['url'] && item['name']
+          ),
         }
 
         this.submitting = true
         updateFileContent({
           message: 'Update settings',
-          content: JSON.stringify(values, null, 2),
-          path: SETTING_PATH
+          content: JSON.stringify(values),
+          path: SETTING_PATH,
         })
           .then(() => {
             this.message.success($t('_saveSuccess'))
           })
-          .catch(res => {
+          .catch((res) => {
             this.notification.error($t('_error'), res.message as string)
           })
           .finally(() => {
             this.submitting = false
           })
-      }
+      },
     })
   }
 }

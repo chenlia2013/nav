@@ -1,13 +1,7 @@
-// Copyright @ 2018-2022 xiejiahe. All rights reserved. MIT license.
+// Copyright @ 2018-present xiejiahe. All rights reserved. MIT license.
 // See https://github.com/xjh22222228/nav
 
-export type ThemeType =
-  | 'Light'
-  | 'Sim'
-  | 'Side'
-  | 'App'
-  | 'Shortcut'
-
+export type ThemeType = 'Light' | 'Sim' | 'Side' | 'App' | 'Shortcut'
 
 export interface ITagPropValues {
   name?: string
@@ -22,6 +16,8 @@ export interface ITagProp {
 }
 
 export interface INavFourProp {
+  __name__: string | undefined
+  __desc__: string | undefined
   name: string
   desc: string
   url: string
@@ -31,6 +27,7 @@ export interface INavFourProp {
   top?: boolean
   index?: number // sort
   ownVisible?: boolean
+  breadcrumb: string[]
   urls?: {
     [tagName: string]: string
   }
@@ -62,6 +59,7 @@ export interface INavProps extends Object {
   icon?: string | null
   createdAt?: string
   ownVisible?: boolean
+  collapsed?: boolean
   nav: INavTwoProp[]
   [key: string]: any
 }
@@ -85,12 +83,17 @@ export interface ISettings {
   keywords: string
   theme: ThemeType
   appTheme: ThemeType
-  footerContent?: string|null
+  footerContent?: string | null
+  headerContent?: string | null
   baiduStatisticsUrl?: string
   cnzzStatisticsUrl?: string
   iconfontUrl?: string
   showGithub: boolean
   showLanguage: boolean
+  showCopy: Boolean | undefined
+  showShare: Boolean | undefined
+  showThemeToggle: Boolean
+  actionUrl?: string | null
 
   simThemeImages: Record<string, string>[]
   simThemeDesc: string
@@ -112,4 +115,9 @@ export interface IConfig {
   gitRepoUrl: string
   branch: string
   hashMode: boolean
+}
+
+export type internalProps = {
+  loginViewCount: number
+  userViewCount: number
 }

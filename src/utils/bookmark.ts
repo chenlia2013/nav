@@ -1,4 +1,5 @@
-// Copyright @ 2018-2022 xiejiahe. All rights reserved. MIT license.
+// @ts-nocheck
+// Copyright @ 2018-present xiejiahe. All rights reserved. MIT license.
 // See https://github.com/xjh22222228/nav
 
 import { INavProps } from '../types'
@@ -28,8 +29,14 @@ function getUrl(node: Element) {
   return node.getAttribute('href') || ''
 }
 
+function getIconFromUrl(url) {
+  if (!url) return null;
+  const hostname = (new URL(url)).hostname;
+  return hostname && `https://icons.bitwarden.net/${hostname}/icon.png`
+}
+
 function getIcon(node: Element) {
-  return node.getAttribute('icon') || null
+  return node.getAttribute('icon') || getIconFromUrl(getUrl(node))
 }
 
 const nowCratedAt = getCreatedAt()

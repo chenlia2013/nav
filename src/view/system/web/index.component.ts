@@ -1,4 +1,5 @@
-// Copyright @ 2018-2022 xiejiahe. All rights reserved. MIT license.
+// @ts-nocheck
+// Copyright @ 2018-present xiejiahe. All rights reserved. MIT license.
 // See https://github.com/xjh22222228/nav
 
 import { Component } from '@angular/core'
@@ -21,7 +22,7 @@ import { saveAs } from 'file-saver'
 @Component({
   selector: 'app-admin',
   templateUrl: './index.component.html',
-  styleUrls: ['./index.component.scss']
+  styleUrls: ['./index.component.scss'],
 })
 export default class WebpComponent {
   $t = $t
@@ -41,23 +42,21 @@ export default class WebpComponent {
   threeSelect = ''
   tagMap = tagMap
   objectKeys = Object.keys
-  websiteDetail: INavFourProp|null
+  websiteDetail: any = []
 
   twoTableData: INavTwoProp[] = []
   threeTableData: INavThreeProp[] = []
   websiteTableData: INavFourProp[] = []
 
   checkedAll = false
-  setOfCheckedId = new Set<string>();
+  setOfCheckedId = new Set<string>()
 
-  constructor (
+  constructor(
     private fb: FormBuilder,
     private modal: NzModalService,
     private notification: NzNotificationService,
-    private message: NzMessageService,
-  ) {}
-
-  ngOnInit () {
+    private message: NzMessageService
+  ) {
     this.validateForm = this.fb.group({
       title: ['', [Validators.required]],
       icon: [''],
@@ -65,7 +64,9 @@ export default class WebpComponent {
     })
   }
 
-  onAllChecked(checked, type: 1|2|3|4) {
+  ngOnInit() {}
+
+  onAllChecked(checked: boolean, type: 1 | 2 | 3 | 4) {
     this.setOfCheckedId.clear()
     switch (type) {
       case 1:
@@ -76,27 +77,27 @@ export default class WebpComponent {
             this.setOfCheckedId.delete(item.title)
           }
         })
-        break;
+        break
 
       case 2:
         this.twoTableData.forEach((item) => {
           if (checked) {
-            this.setOfCheckedId.add(item.title)
+            this.setOfCheckedId.add(item.title as string)
           } else {
-            this.setOfCheckedId.delete(item.title)
+            this.setOfCheckedId.delete(item.title as string)
           }
         })
-        break;
+        break
 
       case 3:
         this.threeTableData.forEach((item) => {
           if (checked) {
-            this.setOfCheckedId.add(item.title)
+            this.setOfCheckedId.add(item.title as string)
           } else {
-            this.setOfCheckedId.delete(item.title)
+            this.setOfCheckedId.delete(item.title as string)
           }
         })
-        break;
+        break
 
       case 4:
         this.websiteTableData.forEach((item) => {
@@ -106,11 +107,11 @@ export default class WebpComponent {
             this.setOfCheckedId.delete(item.name)
           }
         })
-        break;
+        break
     }
   }
 
-  onItemChecked(idStr, checked) {
+  onItemChecked(idStr: any, checked: boolean) {
     if (checked) {
       this.setOfCheckedId.add(idStr)
     } else {
@@ -118,58 +119,74 @@ export default class WebpComponent {
     }
   }
 
-  onBatchDelete(type: 1|2|3|4) {
+  onBatchDelete(type: 1 | 2 | 3 | 4) {
     switch (type) {
       case 1:
-        this.setOfCheckedId.forEach(value => {
-          const idx = this.websiteList.findIndex(item => item.title === value)
+        this.setOfCheckedId.forEach((value) => {
+          const idx = this.websiteList.findIndex((item) => item.title === value)
           if (idx >= 0) {
             this.websiteList.splice(idx, 1)
           }
         })
-        break;
+        break
 
-      case 2: {
-        this.twoTableData = this.twoTableData.filter(item => {
-          return !this.setOfCheckedId.has(item.title)
-        })
-        const idx = this.websiteList.findIndex(item => item.title === this.oneSelect)
-        if (idx >= 0) {
-          this.websiteList[idx].nav = this.twoTableData
-        }
-      }
-        break;
-
-      case 3: {
-        this.threeTableData = this.threeTableData.filter(item => {
-          return !this.setOfCheckedId.has(item.title)
-        })
-        const idx = this.websiteList.findIndex(item => item.title === this.oneSelect)
-        if (idx >= 0) {
-          const idx2 = this.websiteList[idx].nav.findIndex(item => item.title === this.twoSelect)
-          if (idx2 >= 0) {
-            this.websiteList[idx].nav[idx2].nav = this.threeTableData
+      case 2:
+        {
+          this.twoTableData = this.twoTableData.filter((item) => {
+            return !this.setOfCheckedId.has(item.title as string)
+          })
+          const idx = this.websiteList.findIndex(
+            (item) => item.title === this.oneSelect
+          )
+          if (idx >= 0) {
+            this.websiteList[idx].nav = this.twoTableData
           }
         }
-      }
-        break;
+        break
 
-      case 4: {
-        this.websiteTableData = this.websiteTableData.filter(item => {
-          return !this.setOfCheckedId.has(item.name)
-        })
-        const idx = this.websiteList.findIndex(item => item.title === this.oneSelect)
-        if (idx >= 0) {
-          const idx2 = this.websiteList[idx].nav.findIndex(item => item.title === this.twoSelect)
-          if (idx2 >= 0) {
-            const idx3 = this.websiteList[idx].nav[idx2].nav.findIndex(item => item.title === this.threeSelect)
-            if (idx3 >= 0) {
-              this.websiteList[idx].nav[idx2].nav[idx3].nav = this.websiteTableData
+      case 3:
+        {
+          this.threeTableData = this.threeTableData.filter((item) => {
+            return !this.setOfCheckedId.has(item.title as string)
+          })
+          const idx = this.websiteList.findIndex(
+            (item) => item.title === this.oneSelect
+          )
+          if (idx >= 0) {
+            const idx2 = this.websiteList[idx].nav.findIndex(
+              (item) => item.title === this.twoSelect
+            )
+            if (idx2 >= 0) {
+              this.websiteList[idx].nav[idx2].nav = this.threeTableData
             }
           }
         }
-      }
-        break;
+        break
+
+      case 4:
+        {
+          this.websiteTableData = this.websiteTableData.filter((item) => {
+            return !this.setOfCheckedId.has(item.name)
+          })
+          const idx = this.websiteList.findIndex(
+            (item) => item.title === this.oneSelect
+          )
+          if (idx >= 0) {
+            const idx2 = this.websiteList[idx].nav.findIndex(
+              (item) => item.title === this.twoSelect
+            )
+            if (idx2 >= 0) {
+              const idx3 = this.websiteList[idx].nav[idx2].nav.findIndex(
+                (item) => item.title === this.threeSelect
+              )
+              if (idx3 >= 0) {
+                this.websiteList[idx].nav[idx2].nav[idx3].nav =
+                  this.websiteTableData
+              }
+            }
+          }
+        }
+        break
     }
     this.onTabChange()
     setWebsiteList(this.websiteList)
@@ -185,17 +202,17 @@ export default class WebpComponent {
         setTimeout(() => {
           window.location.reload()
         }, 1500)
-      }
+      },
     })
   }
 
   handleDownloadBackup() {
     const value = JSON.stringify(this.websiteList)
-    const blob = new Blob([value], {type: "text/plain;charset=utf-8"});
-    saveAs(blob, "db.json");
+    const blob = new Blob([value], { type: 'text/plain;charset=utf-8' })
+    saveAs(blob, 'db.json')
   }
 
-  handleUploadBackup(e) {
+  handleUploadBackup(e: any) {
     const that = this
     const files = e.target.files
     if (files.length <= 0) {
@@ -204,18 +221,15 @@ export default class WebpComponent {
     const file = files[0]
     const fileReader = new FileReader()
     fileReader.readAsText(file)
-    fileReader.onload = function(data) {
+    fileReader.onload = function (data) {
       try {
-        const { result } = data.target
+        const { result } = data.target as any
         that.websiteList = JSON.parse(result as string)
         setWebsiteList(that.websiteList)
-        e.target.value = '';
+        e.target.value = ''
         that.message.success($t('_actionSuccess'))
-      } catch (error) {
-        that.notification.error(
-          $t('_error'),
-          error.message
-        )
+      } catch (error: any) {
+        that.notification.error($t('_error'), error.message)
       }
     }
   }
@@ -255,7 +269,9 @@ export default class WebpComponent {
       this.websiteTableData[this.editIdx] = payload
     } else {
       // 创建
-      const exists = this.websiteTableData.some(item => item.name === payload.name)
+      const exists = this.websiteTableData.some(
+        (item) => item.name === payload.name
+      )
       if (exists) {
         return this.message.error($t('_repeatAdd'))
       }
@@ -283,7 +299,7 @@ export default class WebpComponent {
   }
 
   // 删除一级分类
-  handleConfirmDelOne(idx) {
+  handleConfirmDelOne(idx: number) {
     this.websiteList.splice(idx, 1)
     this.message.success($t('_delSuccess'))
     setWebsiteList(this.websiteList)
@@ -302,7 +318,7 @@ export default class WebpComponent {
   }
 
   // 删除二级分类
-  handleConfirmDelTwo(idx) {
+  handleConfirmDelTwo(idx: number) {
     this.twoTableData.splice(idx, 1)
     this.message.success($t('_delSuccess'))
     setWebsiteList(this.websiteList)
@@ -310,12 +326,16 @@ export default class WebpComponent {
 
   // 拖拽三级分类
   dropThree(event: CdkDragDrop<string[]>): void {
-    moveItemInArray(this.threeTableData, event.previousIndex, event.currentIndex)
+    moveItemInArray(
+      this.threeTableData,
+      event.previousIndex,
+      event.currentIndex
+    )
     setWebsiteList(this.websiteList)
   }
 
   // 删除三级分类
-  handleConfirmDelThree(idx) {
+  handleConfirmDelThree(idx: number) {
     this.threeTableData.splice(idx, 1)
     this.message.success($t('_delSuccess'))
     setWebsiteList(this.websiteList)
@@ -323,42 +343,52 @@ export default class WebpComponent {
 
   // 拖拽网站
   dropWebsite(event: CdkDragDrop<string[]>): void {
-    moveItemInArray(this.websiteTableData, event.previousIndex, event.currentIndex)
+    moveItemInArray(
+      this.websiteTableData,
+      event.previousIndex,
+      event.currentIndex
+    )
     setWebsiteList(this.websiteList)
   }
 
   // 删除网站
-  handleConfirmDelWebsite(idx) {
+  handleConfirmDelWebsite(idx: number) {
     this.websiteTableData.splice(idx, 1)
     this.message.success($t('_delSuccess'))
     setWebsiteList(this.websiteList)
   }
 
-  hanldeOneSelect(value) {
+  hanldeOneSelect(value: any) {
     this.oneSelect = value
-    const findItem = this.websiteList.find(item => item.title === value)
-    this.twoTableData = findItem.nav
+    const findItem = this.websiteList.find((item) => item.title === value)
+    if (findItem) {
+      this.twoTableData = findItem.nav
+    }
     this.twoSelect = ''
     this.threeSelect = ''
     this.onTabChange()
   }
 
-  hanldeTwoSelect(value) {
+  hanldeTwoSelect(value: any) {
     this.twoSelect = value
-    const findItem = this.twoTableData.find(item => item.title === value)
-    this.threeTableData = findItem.nav
+    const findItem = this.twoTableData.find((item) => item.title === value)
+    if (findItem) {
+      this.threeTableData = findItem.nav
+    }
     this.threeSelect = ''
     this.onTabChange()
   }
 
-  hanldeThreeSelect(value) {
+  hanldeThreeSelect(value: any) {
     this.threeSelect = value
-    const findItem = this.threeTableData.find(item => item.title === value)
-    this.websiteTableData = findItem.nav
+    const findItem = this.threeTableData.find((item) => item.title === value)
+    if (findItem) {
+      this.websiteTableData = findItem.nav
+    }
     this.onTabChange()
   }
 
-  handleEditBtn(data, editIdx) {
+  handleEditBtn(data: any, editIdx: number) {
     let { title, icon, name } = data
     this.toggleCreateModal()
     this.isEdit = true
@@ -378,21 +408,21 @@ export default class WebpComponent {
         updateFileContent({
           message: 'update db',
           content: JSON.stringify(this.websiteList),
-          path: DB_PATH
+          path: DB_PATH,
         })
-        .then(() => {
-          this.message.success($t('_syncSuccessTip'))
-        })
-        .catch(res => {
-          this.notification.error(
-            `${$t('_error')}: ${res?.response?.status ?? 401}`,
-            $t('_syncFailTip')
-          )
-        })
-        .finally(() => {
-          this.syncLoading = false
-        })
-      }
+          .then(() => {
+            this.message.success($t('_syncSuccessTip'))
+          })
+          .catch((res) => {
+            this.notification.error(
+              `${$t('_error')}: ${res?.response?.status ?? 401}`,
+              $t('_syncFailTip')
+            )
+          })
+          .finally(() => {
+            this.syncLoading = false
+          })
+      },
     })
   }
 
@@ -411,27 +441,30 @@ export default class WebpComponent {
     if (this.isEdit) {
       switch (this.tabActive) {
         // 编辑一级分类
-        case 0: {
-          this.websiteList[this.editIdx].title = title
-          this.websiteList[this.editIdx].icon = icon
-          this.websiteList[this.editIdx].ownVisible = ownVisible
-        }
+        case 0:
+          {
+            this.websiteList[this.editIdx].title = title
+            this.websiteList[this.editIdx].icon = icon
+            this.websiteList[this.editIdx].ownVisible = ownVisible
+          }
           break
-  
+
         // 编辑二级分类
-        case 1: {
-          this.twoTableData[this.editIdx].title = title
-          this.twoTableData[this.editIdx].icon = icon
-          this.twoTableData[this.editIdx].ownVisible = ownVisible
-        }
+        case 1:
+          {
+            this.twoTableData[this.editIdx].title = title
+            this.twoTableData[this.editIdx].icon = icon
+            this.twoTableData[this.editIdx].ownVisible = ownVisible
+          }
           break
-  
+
         // 编辑三级分类
-        case 2: {
-          this.threeTableData[this.editIdx].title = title
-          this.threeTableData[this.editIdx].icon = icon
-          this.threeTableData[this.editIdx].ownVisible = ownVisible
-        }
+        case 2:
+          {
+            this.threeTableData[this.editIdx].title = title
+            this.threeTableData[this.editIdx].icon = icon
+            this.threeTableData[this.editIdx].ownVisible = ownVisible
+          }
           break
       }
 
@@ -439,54 +472,61 @@ export default class WebpComponent {
     } else {
       switch (this.tabActive) {
         // 新增一级分类
-        case 0: {
-          const exists = this.websiteList.some(item => item.title === title)
-          if (exists) {
-            return this.message.error($t('_repeatAdd'))
+        case 0:
+          {
+            const exists = this.websiteList.some((item) => item.title === title)
+            if (exists) {
+              return this.message.error($t('_repeatAdd'))
+            }
+
+            this.websiteList.unshift({
+              createdAt,
+              title,
+              icon,
+              ownVisible,
+              nav: [],
+            })
           }
-  
-          this.websiteList.unshift({
-            createdAt,
-            title,
-            icon,
-            ownVisible,
-            nav: []
-          })
-        }
           break
-  
+
         // 新增二级分类
-        case 1: {
-          const exists = this.twoTableData.some(item => item.title === title)
-          if (exists) {
-            return this.message.error($t('_repeatAdd'))
+        case 1:
+          {
+            const exists = this.twoTableData.some(
+              (item) => item.title === title
+            )
+            if (exists) {
+              return this.message.error($t('_repeatAdd'))
+            }
+
+            this.twoTableData.unshift({
+              createdAt,
+              title,
+              icon,
+              ownVisible,
+              nav: [],
+            })
           }
-  
-          this.twoTableData.unshift({
-            createdAt,
-            title,
-            icon,
-            ownVisible,
-            nav: []
-          })
-        }
           break
-  
+
         // 新增三级分类
-        case 2: {
-          const exists = this.threeTableData.some(item => item.title === title)
-          if (exists) {
-            return this.message.error($t('_repeatAdd'))
+        case 2:
+          {
+            const exists = this.threeTableData.some(
+              (item) => item.title === title
+            )
+            if (exists) {
+              return this.message.error($t('_repeatAdd'))
+            }
+
+            this.threeTableData.unshift({
+              createdAt,
+              title,
+              icon,
+              ownVisible,
+              nav: [],
+            })
           }
-  
-          this.threeTableData.unshift({
-            createdAt,
-            title,
-            icon,
-            ownVisible,
-            nav: []
-          })
-        }
           break
       }
       this.message.success($t('_addSuccess'))
